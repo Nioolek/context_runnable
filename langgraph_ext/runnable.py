@@ -11,7 +11,6 @@ from contextvars import copy_context
 from typing import Any, Callable, Awaitable, Optional, Sequence, cast
 
 from langchain_core.runnables import RunnableConfig, Runnable
-from langchain_core.callbacks import get_callback_manager_for_config
 
 try:
     from langchain_core.tracers.langchain import LangChainTracer
@@ -19,7 +18,12 @@ except ImportError:
     LangChainTracer = None
 
 from langgraph._internal._runnable import RunnableCallable, ASYNCIO_ACCEPTS_CONTEXT
-from langgraph._internal._config import patch_config, ensure_config
+from langgraph._internal._config import (
+    patch_config,
+    ensure_config,
+    get_callback_manager_for_config,
+    get_async_callback_manager_for_config,
+)
 from langgraph._internal._constants import CONF, CONFIG_KEY_RUNTIME
 
 from .context_vars import ContextVarsManager, _CONTEXT_VARS
@@ -298,8 +302,6 @@ class ContextAwareRunnableCallable(RunnableCallable):
         try:
             if self.trace:
                 # trace 模式
-                from langchain_core.callbacks import get_async_callback_manager_for_config
-                
                 callback_manager = get_async_callback_manager_for_config(config, self.tags)
                 run_manager = await callback_manager.on_chain_start(
                     None,
