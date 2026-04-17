@@ -7,6 +7,7 @@ ContextAwareRunnableCallable - 自动注入上下文的节点基类
 
 import asyncio
 import inspect
+from collections.abc import Coroutine
 from contextvars import copy_context
 from typing import Any, Callable, Awaitable, Optional, Sequence, cast
 
@@ -314,7 +315,7 @@ class ContextAwareRunnableCallable(RunnableCallable):
                     child_config = patch_config(
                         config, callbacks=run_manager.get_child()
                     )
-                    coro = cast(asyncio.Coroutine, self.afunc(*args, **kwargs))
+                    coro = cast(Coroutine, self.afunc(*args, **kwargs))
                     
                     # 获取 run
                     run = None
